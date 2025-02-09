@@ -1,6 +1,5 @@
 import BlackFridayBanner from "@/components/BlackFridayBanner";
 import ProductsView from "@/components/productView";
-import { Button } from "@/components/ui/button";
 import { getAllCategories } from "@/sanity/lib/products/getAllCategories";
 import { getAllProducts } from "@/sanity/lib/products/getAllProducts";
 

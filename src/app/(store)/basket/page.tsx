@@ -2,7 +2,7 @@
 
 import useBasketStore from "@/store/store";
 import React, { useEffect } from "react";
-import { SignInButton, useAuth, useUser } from "@clerk/nextjs";
+import { SignInButton, useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import AddToBasketButton from "@/components/AddToBasketButton";
@@ -10,17 +10,10 @@ import Image from "next/image";
 import imageUrl from "@/lib/imageUrl";
 import Loader from "@/components/Loader";
 
-export type Metadata = {
-    orderNumber: string;
-    customerName: string;
-    customerEmail: string;
-    clerkUserId: string;
-}
-
 export default function BasketPage() {
   const groupItems = useBasketStore((state) => state.getGroupedItems());
   const { isSignedIn } = useAuth();
-  const { user } = useUser();
+  // const { user } = useUser();
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
   const [isloading, setIsLoading] = useState(false);
@@ -47,12 +40,12 @@ export default function BasketPage() {
     setIsLoading(true);
     window.location.href = "/checkout";
     try {
-        const metadata: Metadata = {
-            orderNumber: crypto.randomUUID(),
-            customerName: user?.fullName ?? "unknown",
-            customerEmail: user?.emailAddresses[0].emailAddress ?? "unknown",
-            clerkUserId: user!.id,
-        };
+        // const metadata: Metadata = {
+        //     orderNumber: crypto.randomUUID(),
+        //     customerName: user?.fullName ?? "unknown",
+        //     customerEmail: user?.emailAddresses[0].emailAddress ?? "unknown",
+        //     clerkUserId: user!.id,
+        // };
         // const CheckoutUrl = await createCheckoutSession(groupItems, metadata)
         // if(checkoutUrl){
         //     window.location.href = checkoutUrl;
