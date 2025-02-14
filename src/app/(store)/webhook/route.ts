@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     try {
       const order = await createOrderInSanity(session);
       console.log("Order created in Sanity:");
-    //   console.log(order);
+      console.log(order);
     } catch (err) {
       console.error("Error creating order in Sanity:", err);
       return NextResponse.json(
