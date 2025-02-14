@@ -8,10 +8,8 @@ import { v4 as uuidV4 } from "uuid";
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
-  const headersList = await headers();
-  const sig = headersList.get("stripe-signature");
-
-  // console.log(body);
+  const headersList = headers();
+  const sig = (await headersList).get("stripe-signature");
 
   if (!sig) {
     return NextResponse.json({ error: "No signature" }, { status: 400 });
@@ -20,7 +18,7 @@ export async function POST(req: NextRequest) {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
   if (!webhookSecret) {
-    console.log("⚠ Stripe webhook secret is not set.");
+    console.error("⚠ Stripe webhook secret is not set.");
     return NextResponse.json(
       { error: "Stripe webhook secret is not set" },
       { status: 400 }
@@ -31,9 +29,9 @@ export async function POST(req: NextRequest) {
   try {
     event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
   } catch (err) {
-    console.error("webhook signature verification failed:", err);
+    console.error("Webhook signature verification failed:", err);
     return NextResponse.json(
-      { error: `webhook Error: ${err}` },
+      { error: `Webhook Error: ${err}` },
       { status: 400 }
     );
   }
@@ -41,9 +39,18 @@ export async function POST(req: NextRequest) {
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     try {
+      const existingOrder = await backendClient.fetch(
+        `*[_type == "order" && stripeCheckoutSessionId == $sessionId][0]`,
+        { sessionId: session.id }
+      );
+
+      if (existingOrder) {
+        console.log("⚠ Order already exists in Sanity, skipping creation.");
+        return NextResponse.json({ message: "Order already exists" });
+      }
+
       const order = await createOrderInSanity(session);
-      console.log("Order created in Sanity:");
-      console.log(order);
+      console.log("✅ Order created in Sanity:", order);
     } catch (err) {
       console.error("Error creating order in Sanity:", err);
       return NextResponse.json(
@@ -69,12 +76,9 @@ async function createOrderInSanity(session: Stripe.Checkout.Session) {
   const { orderNumber, customerName, customerEmail, clerkUserId } =
     metadata as Metadata;
 
-  const lineItemsWithProduct = await stripe.checkout.sessions.listLineItems(
-    id,
-    {
-      expand: ["data.price.product"],
-    }
-  );
+  const lineItemsWithProduct = await stripe.checkout.sessions.listLineItems(id, {
+    expand: ["data.price.product"],
+  });
 
   const sanityProduct = lineItemsWithProduct.data.map((item) => ({
     _key: uuidV4(),
