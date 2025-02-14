@@ -38,7 +38,7 @@ export async function createCheckoutSession(
 
     // ✅ Fix: Ensure correct URL handling
     const baseUrl =
-      process.env.NEXT_PUBLIC_BASE_URL ||
+      process.env.VERCEL_URL ||
       (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "");
 
     if (!baseUrl) {
