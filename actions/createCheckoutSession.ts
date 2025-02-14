@@ -35,9 +35,18 @@ export async function createCheckoutSession(
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
     }
-    const successUrl = `${process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL : `${process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`}`}/success?session_id={CHECKOUT_SESSION_ID}&orderNumber=${metadata.orderNumber}`
 
-    const cancelUrl = `${process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL : `https://${process.env.VERCEL_URL}`}/basket`;
+    // ✅ Fix: Ensure correct URL handling
+    const baseUrl =
+      process.env.NEXT_PUBLIC_BASE_URL ||
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "");
+
+    if (!baseUrl) {
+      throw new Error("Base URL is not defined. Set NEXT_PUBLIC_BASE_URL or deploy on Vercel.");
+    }
+
+    const successUrl = `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}&orderNumber=${metadata.orderNumber}`;
+    const cancelUrl = `${baseUrl}/basket`;
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -66,6 +75,7 @@ export async function createCheckoutSession(
         quantity: item.quantity,
       })),
     });
+
     return session.url || "";
   } catch (error) {
     console.error("Error creating checkout session: ", error);
