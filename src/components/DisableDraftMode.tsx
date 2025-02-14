@@ -14,7 +14,7 @@ export default function DisableDraftMode() {
 
     const handleClick = async () => {
        await fetch("/api/draft-mode/disable");
-       router.refresh();
+       router.replace("/");
     };
 
   return (
