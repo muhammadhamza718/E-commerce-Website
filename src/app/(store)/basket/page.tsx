@@ -2,18 +2,19 @@
 
 import useBasketStore from "@/store/store";
 import React, { useEffect } from "react";
-import { SignInButton, useAuth } from "@clerk/nextjs";
+import { SignInButton, useAuth, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import AddToBasketButton from "@/components/AddToBasketButton";
 import Image from "next/image";
 import imageUrl from "@/lib/imageUrl";
 import Loader from "@/components/Loader";
+import { createCheckoutSession, Metadata } from "../../../../actions/createCheckoutSession";
 
 export default function BasketPage() {
   const groupItems = useBasketStore((state) => state.getGroupedItems());
   const { isSignedIn } = useAuth();
-  // const { user } = useUser();
+  const { user } = useUser();
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
   const [isloading, setIsLoading] = useState(false);
@@ -38,18 +39,17 @@ export default function BasketPage() {
   const handleCheckout = async () => {
     if (!isSignedIn) return;
     setIsLoading(true);
-    window.location.href = "/checkout";
     try {
-        // const metadata: Metadata = {
-        //     orderNumber: crypto.randomUUID(),
-        //     customerName: user?.fullName ?? "unknown",
-        //     customerEmail: user?.emailAddresses[0].emailAddress ?? "unknown",
-        //     clerkUserId: user!.id,
-        // };
-        // const CheckoutUrl = await createCheckoutSession(groupItems, metadata)
-        // if(checkoutUrl){
-        //     window.location.href = checkoutUrl;
-        // }
+        const metadata: Metadata = {
+            orderNumber: crypto.randomUUID(),
+            customerName: user?.fullName ?? "unknown",
+            customerEmail: user?.emailAddresses[0].emailAddress ?? "unknown",
+            clerkUserId: user!.id,
+        };
+        const CheckoutUrl = await createCheckoutSession(groupItems, metadata)
+        if(CheckoutUrl){
+            window.location.href = CheckoutUrl;
+        }        
     } catch (error) {
         console.error("Error creating checkout session: ", error);
     } finally {
@@ -112,7 +112,7 @@ export default function BasketPage() {
               <p className="flex justify-between text-2xl font-bold border-t pt-2">
                 <span>Total:</span>
                 <span>
-                  {useBasketStore.getState().getTotalPrice().toFixed(2)}
+                  ${useBasketStore.getState().getTotalPrice().toFixed(2)}
                 </span>
               </p>
             </div>

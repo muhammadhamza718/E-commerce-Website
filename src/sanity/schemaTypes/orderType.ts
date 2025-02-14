@@ -8,18 +8,18 @@ export const orderType = defineType({
   icon: BasketIcon,
   fields: [
     defineField({
-      name: "OrderNumber",
+      name: "orderNumber",
       title: "Order Number",
       type: "string",
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "stripCheckoutSessionId",
+      name: "stripeCheckoutSessionId",
       title: "Stripe Checkout Session ID",
       type: "string",
     }),
     defineField({
-      name: "stripCustomerId",
+      name: "stripeCustomerId",
       title: "Stripe Customer ID",
       type: "string",
       validation: (Rule) => Rule.required(),
@@ -31,7 +31,7 @@ export const orderType = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "CustomerName",
+      name: "customerName",
       title: "Customer Name",
       type: "string",
       validation: (Rule) => Rule.required(),
@@ -57,10 +57,16 @@ export const orderType = defineType({
             type: "object",
             fields: [
                 defineField({
+                  name: "key",
+                  title: "Product Key",
+                  type: "reference",
+                  to: [{ type: "string"}],
+                }),
+                defineField({
                     name: "product",
                     title: "Product Bought",
                     type: "reference",
-                    to: [{ type: "string"}],
+                    to: [{ type: "product"}],
                 }),
                 defineField({
                     name: "quantity",
@@ -101,13 +107,13 @@ export const orderType = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: "AmountDiscount",
+      name: "amountDiscount",
       title: "Amount Discount",
       type: "number",
       validation: (Rule) => Rule.min(0),
     }),
     defineField({
-      name: "orderStatus",
+      name: "status",
       title: "Order Status",
       type: "string",
       options: {
@@ -132,11 +138,11 @@ export const orderType = defineType({
         name: "customerName",
         amount: "totalPrice",
         currency: "currency",
-        orderId: "OrderNumber",
+        orderId: "orderNumber",
         email: "email",
         },
         prepare(select) {
-            const orderIdSnippet = `${select.orderId.slice(0, 5)}...${select.orderId.slice(-5)}`;
+            const orderIdSnippet = `${select.orderId?.slice(0, 5)}...${select.orderId?.slice(-5)}`;
             return {
                 title: `${select.name} (${orderIdSnippet})`,
                 subtitle: `${select.amount} - ${select.currency} ${select.email}`,

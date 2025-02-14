@@ -446,21 +446,21 @@
           "type": "string"
         }
       },
-      "OrderNumber": {
+      "orderNumber": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
         },
         "optional": true
       },
-      "stripCheckoutSessionId": {
+      "stripeCheckoutSessionId": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
         },
         "optional": true
       },
-      "stripCustomerId": {
+      "stripeCustomerId": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
@@ -474,7 +474,7 @@
         },
         "optional": true
       },
-      "CustomerName": {
+      "customerName": {
         "type": "objectAttribute",
         "value": {
           "type": "string"
@@ -502,7 +502,7 @@
           "of": {
             "type": "object",
             "attributes": {
-              "product": {
+              "key": {
                 "type": "objectAttribute",
                 "value": {
                   "type": "object",
@@ -529,6 +529,36 @@
                     }
                   },
                   "dereferencesTo": "string"
+                },
+                "optional": true
+              },
+              "product": {
+                "type": "objectAttribute",
+                "value": {
+                  "type": "object",
+                  "attributes": {
+                    "_ref": {
+                      "type": "objectAttribute",
+                      "value": {
+                        "type": "string"
+                      }
+                    },
+                    "_type": {
+                      "type": "objectAttribute",
+                      "value": {
+                        "type": "string",
+                        "value": "reference"
+                      }
+                    },
+                    "_weak": {
+                      "type": "objectAttribute",
+                      "value": {
+                        "type": "boolean"
+                      },
+                      "optional": true
+                    }
+                  },
+                  "dereferencesTo": "product"
                 },
                 "optional": true
               },
@@ -569,14 +599,14 @@
         },
         "optional": true
       },
-      "AmountDiscount": {
+      "amountDiscount": {
         "type": "objectAttribute",
         "value": {
           "type": "number"
         },
         "optional": true
       },
-      "orderStatus": {
+      "status": {
         "type": "objectAttribute",
         "value": {
           "type": "union",
