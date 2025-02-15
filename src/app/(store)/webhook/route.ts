@@ -38,6 +38,8 @@ export async function POST(req: NextRequest) {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
+    const orderId = `order_${session.id}`; // Unique order identifier
+
     try {
       const existingOrder = await backendClient.fetch(
         `*[_type == "order" && stripeCheckoutSessionId == $sessionId][0]`,
@@ -45,11 +47,11 @@ export async function POST(req: NextRequest) {
       );
 
       if (existingOrder) {
-        console.log("⚠ Order already exists in Sanity, skipping creation.");
+        console.log("⚠ Order already exists, skipping creation.");
         return NextResponse.json({ message: "Order already exists" });
       }
 
-      const order = await createOrderInSanity(session);
+      const order = await createOrderInSanity(session, orderId);
       console.log("✅ Order created in Sanity:", order);
     } catch (err) {
       console.error("Error creating order in Sanity:", err);
@@ -62,7 +64,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ received: true });
 }
 
-async function createOrderInSanity(session: Stripe.Checkout.Session) {
+async function createOrderInSanity(session: Stripe.Checkout.Session, orderId: string) {
   const {
     id,
     amount_total,
@@ -89,7 +91,8 @@ async function createOrderInSanity(session: Stripe.Checkout.Session) {
     quantity: item.quantity || 0,
   }));
 
-  const order = await backendClient.create({
+  const order = await backendClient.createIfNotExists({
+    _id: orderId, // Ensure uniqueness
     _type: "order",
     orderNumber,
     stripeCheckoutSessionId: id,
@@ -107,5 +110,6 @@ async function createOrderInSanity(session: Stripe.Checkout.Session) {
     status: "paid",
     orderDate: new Date().toISOString(),
   });
+
   return order;
 }
