@@ -24,7 +24,7 @@ export default function AddToBasketButton({
   }
   return (
     <>
-      <div className="flex items-center justify-center space-x-2">
+      <div className="flex items-center justify-center">
         <button
           onClick={() => removeItem(product._id)}
           className={`

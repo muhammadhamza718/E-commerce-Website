@@ -1,68 +1,89 @@
 "use client";
-import { Button } from '@/components/ui/button';
-import useBasketStore from '@/store/store';
-import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import React, { useEffect } from 'react'
+import { Button } from "@/components/ui/button";
+import useBasketStore from "@/store/store";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import React, { useEffect } from "react";
 import { LiaCheckSolid } from "react-icons/lia";
+import { motion } from "framer-motion";
+import { PackageIcon } from "lucide-react";
+import { TrolleyIcon } from "@sanity/icons";
 
 export default function SuccessPage() {
-    const searchParams = useSearchParams();
-    const orderNumber = searchParams.get('orderNumber');
-    const clearBasket = useBasketStore((state) => state.clearBasket);
-    // const sessionId = searchParams.get('session_id');
+  const searchParams = useSearchParams();
+  const orderNumber = searchParams.get("orderNumber");
+  const clearBasket = useBasketStore((state) => state.clearBasket);
 
-    useEffect(() => {
-        if (orderNumber) {
-            clearBasket();
-        }
-    }, [orderNumber, clearBasket])
+  useEffect(() => {
+    if (orderNumber) {
+      clearBasket();
+    }
+  }, [orderNumber, clearBasket]);
 
-    return (
-        <div className='flex flex-col items-center justify-center min-h-screen bg-gray-50'>
-            <div className='bg-white p-6 rounded-xl shadow-lg max-w-2xl w-full mx-4'>
-                <div className='flex justify-center mb-8'>
-                    <div className='h-16 w-16 bg-green-100 rounded-full flex items-center justify-center'>
-                        <LiaCheckSolid className='h-8 w-8 text-green-600' />
-                    </div>
-                </div>
+  return (
+    <div className="flex flex-col items-center font-sans justify-center min-h-screen bg-gradient-to-b from-gray-50 to-gray-200">
+      <motion.div
+        className="bg-white p-8 md:p-12 rounded-2xl shadow-2xl max-w-2xl w-full mx-4 transform transition-all duration-300"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        {/* ✅ Animated Check Icon */}
+        <motion.div
+          className="flex justify-center mb-6"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 120, damping: 10 }}
+        >
+          <div className="h-20 w-20 bg-green-100 rounded-full flex items-center justify-center shadow-lg">
+            <LiaCheckSolid className="h-12 w-12 text-green-600" />
+          </div>
+        </motion.div>
 
-                <h1 className='text-4xl font-bold mb-6 text-center'>
-                    Thank you for Your Order!
-                </h1>
-                <div className='border-t border-b border-gray-200 py-6 mb-6'>
-                    <p className='text-lg text-gray-700 mb-4'>
-                        Your order has been confirmed and will be shipped shortly.
-                    </p>
-                    <div className='space-y-2'>
-                        {orderNumber && (
-                            <p className='text-gray-600 flex items-center space-x-5'>
-                                <span>Order Number:</span>
-                                <span className='font-mono text-sm text-green-600'>{orderNumber}</span>
-                            </p>
-                        )}
-                        {/* {sessionId && (
-                            <p className='text-gray-600 flex items-center space-x-5'>
-                                <span>Transaction ID:</span>
-                                <span className='font-mono text-sm truncate text-gray-600'>{sessionId}</span>
-                            </p>
-                        )} */}
-                    </div>
-                </div>
-                <div className='space-y-4'>
-                    <p className='text-gray-600'>
-                        A confirmation email has been sent to your registered email address.
-                    </p>
-                    <div className='flex flex-col sm:flex-row gap-4 justify-center'>
-                        <Button asChild className='bg-green-600 hover:bg-green-700'>
-                            <Link href='/orders'>View Order Details</Link>
-                        </Button>
-                        <Button asChild className='bg-green-600 hover:bg-green-700'>
-                            <Link href='/'>Continue Shopping</Link>
-                        </Button>
-                    </div>
-                </div>
-            </div>
+        {/* ✅ Order Confirmation Message */}
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-gray-900">
+          🎉 Order Confirmed!
+        </h1>
+
+        {/* ✅ Order Details */}
+        <div className="border-t border-b border-gray-300 py-6 my-6 text-center">
+          <p className="text-lg text-gray-700">
+            Your order has been successfully placed and is now being processed.
+          </p>
+          {orderNumber && (
+            <p className="text-lg text-gray-600 mt-4">
+              <span className="font-semibold">Order Number:</span>{" "}
+              <span className="font-mono text-green-700 bg-green-100 px-3 py-1 rounded-md shadow-sm">
+                {orderNumber}
+              </span>
+            </p>
+          )}
         </div>
-    )
+
+        {/* ✅ Confirmation Message */}
+        <p className="text-gray-600 text-center mb-6">
+          A confirmation email has been sent to your registered email.
+        </p>
+
+        {/* ✅ Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Button
+            asChild
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 transition-all duration-300 px-6 py-4 text-lg rounded-lg shadow-md"
+          >
+            <Link href="/orders">
+              <PackageIcon className="w-5 h-5" /> View Order Details
+            </Link>
+          </Button>
+          <Button
+            asChild
+            className="flex items-center gap-2 bg-gray-800 hover:bg-gray-900 transition-all duration-300 px-6 py-4 text-lg rounded-lg shadow-md"
+          >
+            <Link href="/">
+              <TrolleyIcon className="w-5 h-5" /> Continue Shopping
+            </Link>
+          </Button>
+        </div>
+      </motion.div>
+    </div>
+  );
 }

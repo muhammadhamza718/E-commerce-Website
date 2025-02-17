@@ -62,6 +62,11 @@ body {
   }
 }
 
+.home-page ::selection {
+  background: #a30000; /* Custom Orange Color */
+  color: white;
+}
+
 @layer base {
   * {
     @apply border-border;
