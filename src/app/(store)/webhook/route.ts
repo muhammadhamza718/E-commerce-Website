@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
-    const orderId = `order_${session.id}`; // Unique order identifier
+    const orderId = `order_${session.id}`;
 
     try {
       const existingOrder = await backendClient.fetch(
