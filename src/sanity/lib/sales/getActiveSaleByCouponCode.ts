@@ -16,7 +16,7 @@ export const getActiveSaleByCouponCode = async (couponCode: CouponCode) => {
         query: ACTIVE_SALE_BY_COUPON_QUERY,
         params: {
             couponCode,
-        }, // pass the coupon code as a query parameter
+        },
     });
 
     return activeSale ? activeSale.data : null;
